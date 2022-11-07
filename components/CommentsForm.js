@@ -16,6 +16,7 @@ const CommentsForm = ({ slug }) => {
     const { value: comment } = commentEl.current;
     const { value: name } = nameEl.current;
     const { value: email } = emailEl.current;
+    const { checked: storeData } = storeDataEl.current;
 
     if (!comment || !name || !email) {
       setError(true);
@@ -28,6 +29,14 @@ const CommentsForm = ({ slug }) => {
       comment,
       slug,
     };
+
+    if (storeData) {
+      localStorage.setItem("name", name);
+      localStorage.setItem("email", email);
+    } else {
+      localStorage.removeItem("name", name);
+      localStorage.removeItem("email", email);
+    }
   };
 
   return (
@@ -56,6 +65,20 @@ const CommentsForm = ({ slug }) => {
           name="email"
           className="py-2 px-4 outline-none w-full rounded-lg focus:ring-2 focus:ring-gray-200 bg-gray-100 text-gray-700"
         />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <div>
+          <input
+            ref={storeDataEl}
+            type="checkbox"
+            id="storeData"
+            name="storeData"
+            htmlFor="storeData"
+          />
+          <label className="text-gray-500 cursor-pointer ml-2">
+            Save my email and name for the next time i comment
+          </label>
+        </div>
       </div>
       {error ? (
         <p className="text-xs text-red-500">All fields aree required</p>

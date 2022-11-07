@@ -137,7 +137,6 @@ export const getCategories = async () => {
 };
 
 //Get each category Posts
-
 export const getCategoryPost = async (slug) => {
   const query = gql`
     query GetCategoryPost($slug: String!) {
@@ -173,4 +172,16 @@ export const getCategoryPost = async (slug) => {
   const result = await request(graphqlAPI, query, { slug });
 
   return result.postsConnection.edges;
+};
+
+export const submitComment = async (obj) => {
+  const result = await fetch("/api/comments", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(obj),
+  });
+
+  return result.json();
 };
