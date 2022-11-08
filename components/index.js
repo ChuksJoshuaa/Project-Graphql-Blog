@@ -7,6 +7,8 @@ import Comments from "./Comments";
 import CommentsForm from "./CommentsForm";
 import PostDetail from "./PostDetail";
 import Author from "./Author";
+import FeaturedPostCard from "./FeaturedPostCard";
+import AdjacentPostCard from "./AdjacentPostCard";
 
 export {
   Categories,
@@ -18,4 +20,6 @@ export {
   CommentsForm,
   PostDetail,
   Author,
+  FeaturedPostCard,
+  AdjacentPostCard,
 };

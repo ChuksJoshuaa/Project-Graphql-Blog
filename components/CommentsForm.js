@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 
+import { submitComment } from "../services";
+
 const CommentsForm = ({ slug }) => {
   const [error, setError] = useState(false);
   const [localStorage, setLocalStorage] = useState(null);
@@ -9,6 +11,11 @@ const CommentsForm = ({ slug }) => {
   const nameEl = useRef(null);
   const emailEl = useRef(null);
   const storeDataEl = useRef(null);
+
+  useEffect(() => {
+    nameEl.current.value = window.localStorage.getItem("name");
+    emailEl.current.value = window.localStorage.getItem("email");
+  }, []);
 
   const handleCommentSubmit = () => {
     setError(false);
@@ -31,17 +38,34 @@ const CommentsForm = ({ slug }) => {
     };
 
     if (storeData) {
-      localStorage.setItem("name", name);
-      localStorage.setItem("email", email);
+      window.localStorage.setItem("name", name);
+      window.localStorage.setItem("email", email);
     } else {
-      localStorage.removeItem("name", name);
-      localStorage.removeItem("email", email);
+      window.localStorage.removeItem("name", name);
+      window.localStorage.removeItem("email", email);
     }
+
+    submitComment(commentObj)
+      .then((res) => {
+        console.log(res);
+        commentEl.current.value = "";
+        setshowSuccessMessage(true);
+        setTimeout(() => {
+          setshowSuccessMessage(false);
+        }, 3000);
+      })
+      .catch((res) => {
+        commentEl.current.value = "";
+        setshowSuccessMessage(false);
+        console.log(res);
+      });
   };
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-8 pb-12 mb-8">
-      <h3 className="text-xl mb-8 font-semibold border-b pb-4">CommentsForm</h3>
+      <h3 className="text-xl mb-8 font-semibold border-b pb-4">
+        Leave a Reply
+      </h3>
       <div className="grid grid-cols-1 gap-4 mb-4">
         <textarea
           className="p-4 outline-none w-full rounded-lg focus:ring-2 focus:ring-gray-200 bg-gray-100 text-gray-700"
@@ -92,7 +116,7 @@ const CommentsForm = ({ slug }) => {
           Post Comment
         </button>
         {showSuccessMessage ? (
-          <span className="text-xl float-right font-semibold mt-3 text-green-500">
+          <span className="text-md md:text-lg float-right font-semibold mt-3 text-green-500">
             Comment Submitted for review
           </span>
         ) : null}

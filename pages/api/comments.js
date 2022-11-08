@@ -1,13 +1,48 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { GraphQLClient, gql, GraphQLClient } from "graphql-request";
+import { gql, GraphQLClient } from "graphql-request";
 
 const graphqlAPI = process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT;
+const graphcmsToken = process.env.NEXT_PUBLIC_GRAPHCMS_TOKEN;
 
-export default function comments(req, res) {
-  const GraphQLClient = new GraphQLClient(graphqlAPI, {
+export default async function comments(req, res) {
+  const { name, email, slug, comment } = req.body;
+  const graphQLClient = new GraphQLClient(graphqlAPI, {
     headers: {
-      authorization: `Bearer`,
+      authorization: `Bearer ${graphcmsToken}`,
     },
   });
+
+  const query = gql`
+    mutation CreateComment(
+      $name: String!
+      $email: String!
+      $comment: String!
+      $slug: String!
+    ) {
+      createComment(
+        data: {
+          name: $name
+          email: $email
+          comment: $comment
+          post: { connect: { slug: $slug } }
+        }
+      ) {
+        id
+      }
+    }
+  `;
+
+  try {
+    const result = await graphQLClient.request(query, {
+      name: name,
+      email: email,
+      comment: comment,
+      slug: slug,
+    });
+
+    return res.status(200).send(result);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 }
